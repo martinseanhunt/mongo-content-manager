@@ -5,6 +5,7 @@ const shell = require('shelljs')
 const parseMD = require('parse-md').default
 const get = require('async-get-file')
 const unzipper = require('unzipper')
+var _ = require('lodash')
 const { Octokit } = require('@octokit/rest')
 
 const { Item } = require('./models/Item')
@@ -99,13 +100,9 @@ const syncContent = async () => {
         // If the property on the the parsed item is different from the record in the db we know we need to update
         // the record so set hasChanged to true. We stringify the values so that the array of tags will be compared
         // by value, not reference.
-        if (
-          JSON.stringify(parsedItem[itemKey]) !==
-          JSON.stringify(dbItem[itemKey])
-        ) {
-          console.log(JSON.stringify(parsedItem[itemKey]))
-          console.log(JSON.stringify(dbItem[itemKey]))
 
+        // Use isEqual from lodash so we can deep compare array of tags
+        if (!_.isEqual(parsedItem[itemKey], JSON.stringify(dbItem[itemKey]))) {
           hasChanged = true
         }
       }

@@ -11,6 +11,7 @@
     "async-get-file": "^1.0.4",
     "body-parser": "^1.19.0",
     "dotenv": "^10.0.0",
+    "lodash": "^4.17.21",
     "mongoose": "^5.13.0",
     "parse-md": "^2.0.4",
     "shelljs": "^0.8.4",

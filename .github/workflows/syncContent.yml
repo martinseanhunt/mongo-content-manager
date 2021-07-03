@@ -8,6 +8,8 @@ on:
 
 jobs:
   build:
+    # only run one content sync at a time
+    concurrency: sync-content
     runs-on: ubuntu-latest
     # checkout
     steps:

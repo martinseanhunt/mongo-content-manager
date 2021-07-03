@@ -28,7 +28,7 @@ const syncContent = async () => {
   // Get the repository information from github
   const repo = await octokit.rest.repos.downloadZipballArchive({
     owner: 'martinseanhunt',
-    repo: 'essential-cardano-content',
+    repo: 'mongo-content-manager',
     ref: 'master',
   })
 
@@ -74,6 +74,9 @@ const syncContent = async () => {
     // TODO: This will need to be expanded so we can handle uploading or editing the image url in uploadcare only
     // if the entry has changed. I don' think we can do this with a simple upsert like this. Will have to check
     // for changes manually.
+
+    // For the MVP version of the app we're using image hosting directly with github but we will need to host images
+    // on uploadcare or we will max out our repository size limit
     const updated = await Item.updateOne(
       { filename },
       {

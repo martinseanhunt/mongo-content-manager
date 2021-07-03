@@ -97,11 +97,13 @@ const syncContent = async () => {
   // For purposes of development / debugging we'll return the items
   const items = await Item.find()
 
+  // Log the items
   console.log({
     results: items.length,
     items,
   })
 
+  // Disconnect from database
   await mongoose.disconnect()
   console.log('mongoose disconnected')
 }

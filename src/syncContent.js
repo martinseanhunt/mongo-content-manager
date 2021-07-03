@@ -121,19 +121,6 @@ const syncContent = async () => {
         console.log(`Updated: ${filename}`)
       }
     }
-
-    const updated = await Item.updateOne(
-      { filename },
-      {
-        filename,
-        title,
-        image_filename,
-        image_text,
-        tags,
-        body_content,
-      },
-      { upsert: true }
-    )
   }
 
   // delete any items that may have been removed from the repo... i.e. items that exist in the database but

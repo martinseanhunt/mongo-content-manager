@@ -1,7 +1,7 @@
 ---
-title: This is a title
-image_text: This is the text for the image
+title: What is the best podcast to learn about Cardano
+image_text: Lex Fridamns pod was creat
 image_filename: infinity.jpg
-tags: ['fud', 'ghostchain', 'newtag', 'another']
+tags: ['learning', 'podcast', 'resource']
 body_content:
 ---

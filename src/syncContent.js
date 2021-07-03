@@ -89,7 +89,7 @@ const syncContent = async () => {
 
     if (!dbItem) {
       // This is a new item so we'll build it and save
-      await new Item(newItem).save()
+      await new Item(parsedItem).save()
       console.log(`Added: ${filename}`)
     } else {
       // The item exists in the DB so let's see if the item has changed in any way

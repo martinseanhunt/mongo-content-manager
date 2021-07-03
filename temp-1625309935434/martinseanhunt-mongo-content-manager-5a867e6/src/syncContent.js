@@ -67,56 +67,16 @@ const syncContent = async () => {
 
     // Parse the metadata contained in the markdown file and get the relevant fields
     const {
-      metadata: { title, image_filename, image_text, tags, body_content },
+      metadata: { title, image_filename, image_text, tags },
     } = parseMD(markdown)
 
     // create or update each entry in our database from each item in the repo.
-    // TODO: For the MVP version of the app we're using image hosting directly with github but we will need to come
-    // up with a better solution that doesn't rely on the images being stored in the repository. We will max out
-    // the repo size limit otherwise.
+    // TODO: This will need to be expanded so we can handle uploading or editing the image url in uploadcare only
+    // if the entry has changed. I don' think we can do this with a simple upsert like this. Will have to check
+    // for changes manually.
 
-    // first, try to find an entry with the filename
-    const dbItem = await Item.findOne({ filename })
-    const parsedItem = { title, image_filename, image_text, tags, body_content }
-
-    if (!dbItem) {
-      // This is a new item so we'll build it and save
-      await new Item(newItem).save()
-      console.log(`Added: ${filename}`)
-    } else {
-      // The item exists in the DB so let's see if the item has changed in any way
-
-      // iterate over the parsed Items keys
-      let hasChanged = false
-      for (const itemKey in parsedItem) {
-        // If the property on the the parsed item is different from the record in the db we know we need to update
-        // the record so set hasChanged to true. We stringify the values so that the array of tags will be compared
-        // by value, not reference.
-        if (
-          JSON.stringify(parsedItem[itemKey]) !==
-          JSON.stringify(dbItem[itemKey])
-        ) {
-          console.log(JSON.stringify(parsedItem[itemKey]))
-          console.log(JSON.stringify(dbItem[itemKey]))
-
-          hasChanged = true
-        }
-      }
-
-      // update the record in the DB if it's changed
-      if (hasChanged) {
-        dbItem.filename = filename
-        dbItem.title = title
-        dbItem.image_filename = image_filename
-        dbItem.image_text = image_text
-        dbItem.tags = tags
-        dbItem.body_content = body_content
-
-        await dbItem.save()
-        console.log(`Updated: ${filename}`)
-      }
-    }
-
+    // For the MVP version of the app we're using image hosting directly with github but we will need to host images
+    // on uploadcare or we will max out our repository size limit
     const updated = await Item.updateOne(
       { filename },
       {
@@ -125,7 +85,6 @@ const syncContent = async () => {
         image_filename,
         image_text,
         tags,
-        body_content,
       },
       { upsert: true }
     )
@@ -133,7 +92,7 @@ const syncContent = async () => {
 
   // delete any items that may have been removed from the repo... i.e. items that exist in the database but
   // don't exist in our array of filenames from the repository
-  await Item.deleteMany({ filename: { $nin: filenames } })
+  await Item.remove({ filename: { $nin: filenames } })
 
   // Time to clean up. Delete the temporary folder
   shell.exec(`rm -rf ${directory}`)

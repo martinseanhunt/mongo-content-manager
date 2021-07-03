@@ -1,0 +1,41 @@
+name: sync-content
+
+on:
+  push:
+    branches:
+      # Triggered when a PR is merged in to master
+      - master
+
+jobs:
+  build:
+    # only run one content sync at a time
+    concurrency: sync-content
+    runs-on: ubuntu-latest
+    # checkout
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+
+      # setup cache
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # run our nodejs code
+      - name: Run Code
+        run: |
+          npm i
+          node src/syncContent.js
+        env:
+          CI: true
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          REPO_URI: ${{ secrets.REPO_URI }}
+          MONGO_URI: ${{ secrets.MONGO_URI }}

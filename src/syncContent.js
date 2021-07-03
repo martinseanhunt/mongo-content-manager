@@ -102,7 +102,8 @@ const syncContent = async () => {
         // by value, not reference.
 
         // Use isEqual from lodash so we can deep compare array of tags
-        if (!_.isEqual(parsedItem[itemKey], JSON.stringify(dbItem[itemKey]))) {
+        if (!_.isEqual(parsedItem[itemKey], dbItem[itemKey])) {
+          console.log('Field changed:', parsedItem[itemKey], dbItem[itemKey])
           hasChanged = true
         }
       }

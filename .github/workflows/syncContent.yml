@@ -36,6 +36,6 @@ jobs:
           node src/syncContent.js
         env:
           CI: true
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           REPO_URI: ${{ secrets.REPO_URI }}
           MONGO_URI: ${{ secrets.MONGO_URI }}

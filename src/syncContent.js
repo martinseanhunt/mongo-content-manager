@@ -13,7 +13,7 @@ const { promisifyStream } = require('./util/promisifyStream')
 // TODO: If we end up using a github action, use the GH actions auth method
 // see octokit docs
 const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN,
+  auth: process.env.GH_TOKEN,
 })
 
 const syncContent = async () => {

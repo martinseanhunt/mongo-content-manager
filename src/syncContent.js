@@ -77,7 +77,14 @@ const syncContent = async () => {
 
     // first, try to find an entry with the filename
     const dbItem = await Item.findOne({ filename })
-    const parsedItem = { title, image_filename, image_text, tags, body_content }
+    const parsedItem = {
+      title,
+      image_filename,
+      image_text,
+      // Set optional fields to null to avoid undefined
+      tags: tags || null,
+      body_content: body_content || null,
+    }
 
     if (!dbItem) {
       // This is a new item so we'll build it and save

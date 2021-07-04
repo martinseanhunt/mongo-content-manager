@@ -6,248 +6,70 @@ url:
 image:
 image_text:
 body_content: |
-  __Advertisement :)__
+  In a proof of stake (PoS) blockchain protocol, the ledger is maintained by the stakeholders that hold assets in that ledger. This allows PoS blockchains to use less energy compared with proof of work (PoW) or other types of blockchain protocols. Nevertheless, this requirement imposes a burden on stakeholders. It requires a good number of them to be online and maintain sufficiently good network connectivity that they can collect transactions and have their PoS blocks reach the others without substantial network delays. It follows that any PoS ledger would benefit from reliable server nodes that hold stake and focus on maintenance.
+  ## The argument for stake pools
 
-  - __[pica](https://nodeca.github.io/pica/demo/)__ - high quality and fast image
-    resize in browser.
-  - __[babelfish](https://github.com/nodeca/babelfish/)__ - developer friendly
-    i18n with plurals support and easy syntax.
+  Wealth is typically distributed according to a power-law such as the [Pareto distribution](https://en.wikipedia.org/wiki/Pareto_distribution "Pareto distribution, wikipedia.org"), so running reliable nodes executing the PoS protocol may be an option only for a small, wealthy, subset of stakeholders, leaving most without the ability to run such services. This is undesirable; it would be better if everyone had the ability to contribute to ledger maintenance. An approach to rectify this problem is by allowing the creation of stake pools. Specifically, this refers to the ability of stakeholders to combine their stake and form a single entity, the stake pool, which can engage in the PoS protocol using the total stake of its members. A pool will have a manager who will be responsible for running the service that processes transactions. At the same time, the pool manager should not be able to spend the stake that their pool represents, while members who are represented by the pool should be free to change their mind and reallocate their stake if they wish to another pool. Finally, and most importantly, any stakeholder should be able to aspire to become a stake pool manager.
 
-  You will like those projects!
+  Participating in PoS ledger maintenance incurs costs. Certainly not as high as in the case of a PoW protocol but, nevertheless, still significant. As a result, it is sensible that the community of all stakeholders incentivizes in some way those who support the ledger by setting up servers and processing transactions. This can be achieved by a combination of contributions from those that use the ledger (in the form of transaction fees) and inflation of the circulating supply of coins (by introducing new coins in circulation to be claimed by those engaged in the protocol).
 
-  ---
+  In the case of Bitcoin, we have both the above mechanisms, incentivization and pools. On the one hand, mining is rewarded by transaction fees as well as a block reward that is fixed and diminishes over time following a geometric series. On the other hand, pools can be facilitated by dividing the work required for producing blocks among many participants and using ‘partial’ PoWs (which are PoWs that are of smaller difficulty than the one indicated by the current state of the ledger) as evidence of pool participation.
 
-  # h1 Heading 8-)
-  ## h2 Heading
-  ### h3 Heading
-  #### h4 Heading
-  ##### h5 Heading
-  ###### h6 Heading
+  It is straightforward to apply a similar type of incentivization mechanism in the PoS setting. However, one should ask first whether a Bitcoin-like mechanism (or any mechanism for that matter) would converge to a desirable system configuration. Which brings us to the important question: **what are the desirable system configurations?** If the only consideration is to minimize transaction processing costs, in a failure-free environment, the economically optimal configuration is a dictatorial one. One of the parties maintains the ledger as a service while all the others participate in the pool created by this party. This is clearly an undesirable outcome because the single pool leader becomes also a single point of failure in the system, which is exactly the type of outcome that a distributed ledger is supposed to avoid. It follows that the coexistence of many pools, in other words decentralization, should be a desirable characteristic of the ledger incentivization mechanism.
 
+  ## Reward-sharing schemes for PoS
 
-  ## Horizontal Rules
+  So what would a *reward-sharing scheme* look like in a PoS setting? Rewards should be provided at regular intervals and pool maintenance costs should be retained by the pool manager before distributing the remaining rewards among the members. Given that it is possible to keep track of pool membership in the ledger itself using the staking keys of the participants, reward splits within each pool can be encoded in a smart contract and become part of the ledger maintenance service. First things first, pool managers should be rewarded for their entrepreneurship. A pool creation certificate posted on the ledger will declare a profit margin to be shaved off the pool’s rewards after subtracting operational costs, which should also be declared as part of the pool creation certificate. The cost declaration should be updated frequently to absorb any volatility that the native token of the system has with respect to the currency that denominates the actual costs of the pool manager. At the same time, the pool creation certificate, backed up by one or more staking keys provided by stakeholders, can declare a certain amount of stake that “stands behind” the pool and can be used either as an indication that the pool represents the genuine enterprise of one or more stakeholders or as collateral guaranteeing compliance with correct protocol behavior.
 
-  ___
+  Given the above setup, how do Bitcoin-like mechanisms fare with respect to the decentralization objective? In Bitcoin, assuming everyone follows the protocol, pool rewards are split in proportion to the size of each pool. For example, a mining pool with 20% of the total hashing power is expected to reap 20% of the rewards. This is because rewards are proportional to the number of blocks obtained by the pool and the number of blocks is in turn proportional to the pool’s mining power. Does this lead to a decentralized system? Empirical evidence seems to suggest otherwise: in Bitcoin, mining pools came close (and occasionally [even exceeded](https://en.bitcoinwiki.org/wiki/GHash.IO#51.25_attack_controversy "51% attack controversy, bitcoinwiki.org")) the 50% threshold that is the upper boundary for ensuring the resilience of the ledger. A simple argument can validate this empirical observation in the framework of our reward-sharing schemes: if pools are rewarded proportionally to their size and pool members proportionally to their stake in the pool, the rational thing to do would be to centralize to one pool. To see this consider the following. At first, it is reasonable to expect that all players who are sufficiently wealthy to afford creating a pool will do so by setting up or renting server equipment and promoting it with the objective to attract members so that their share of rewards grows. The other stakeholders that are not pool managers will join the pool that maximizes their payoff, which will be the one with the lowest cost and profit margin. Pool competition for gaining these members will compress profit margins to very small values. But even with zero profit margin, all other pools will lose to the pool with the lowest cost. Assuming that there are no ties, this single pool will attract all stakeholders. Finally, other pool managers will realize that they will be better off joining that pool as opposed to maintaining their own because they will receive more for the stake they possess. Eventually, the system will converge to a dictatorial single pool.
 
-  ---
+  Figure 1 shows a graphical representation of this. It comes from one of the numerous simulations our team has conducted in the process of distilling effective reward sharing schemes. In the experiment, a number of stakeholders follow a reactive process where they attempt to maximize their payoff based on the current system configuration. The experiment leads to a centralized single pool, validating our theoretical observations above for Bitcoin-like schemes. From a decentralization perspective, this is a tragedy of the commons: even though the participants value decentralization as an abstract concept, none of them individually wants to bear the burden of it. 
 
-  ***
+  <figure class="">
+  <img src="https://ucarecdn.com/1b731f0f-1632-4769-abfa-f3bf4656373c/-/resize/1500/" alt="" class="" width="100%" />
+  <figcaption>Figure 1. Centralisation exhibited by a Bitcoin-like reward-sharing scheme in a simulation with 100 stakeholders. Initially, a high number of pools are created by the stakeholders. Taking turns, stakeholders try to maximize their payoff and change strategy, leading to a convergence point where only a single pool exists.</figcaption>
+  </figure> 
 
+  ## A better reward sharing scheme
 
-  ## Typographic replacements
+  Clearly we have to do better than a dictatorship! A first observation is that if we are to achieve decentralization, linearity between rewards and size should taper off after a certain level. This is because, while linearity is attractive when the pool is small and wants to attract stakeholders, after a certain level it should be diminished if we want to give an opportunity for smaller pools to be more competitive. Thus, we will divide the behavior of the reward-sharing scheme depending on the size of the pool to two stages: a growth stage, when linearity is to be respected, and a stabilization stage when the pool is large enough. The point where the transition happens will be called the saturation point and the pool that has passed this point will be saturated. We can fix rewards to be constant after the saturation point, so that if the saturation point is 1%, two pools, with total stakes of 1% and 1.5%, will receive the same rewards. 
 
-  Enable typographer option to see result.
+  To appreciate how the dynamics work from the perspective of a single stakeholder, consider the following example. Suppose there are two pools, A and B managed by Alice and Bob, with operational costs of 25 and 30 coins respectively, each one with a profit margin of 4%. Suppose further that the total rewards to be distributed are 1,000 coins and the saturation point of the reward-sharing mechanism is 20%. At a given point in time, Alice’s pool has 20% of the stake, so it is at the saturation point, while Bob’s pool is at 19%. A prospective pool member, Charlie, holds 1% of the stake and considers which pool to join. Joining Alice’s pool will bring its total stake to 21%, and because it has exceeded the saturation point the reward will be 200 coins (20% of the total rewards). Deducting operational costs will leave 175 coins to be distributed between Alice and the pool members. After removing Alice’s profit margin and considering Charlie’s relative stake in the pool, he will receive 8 coins as a reward. If Charlie joins Bob’s pool, the total rewards will be 200 coins, or 170 coins after removing the operational costs. However, given that Charlie’s stake is 5% (1/20) of the pool, it turns out that he will receive 2% more coins than if he had joined Alice’s pool. So Charlie will join Bob’s pool if he wants to maximize his rewards. 
 
-  (c) (C) (r) (R) (tm) (TM) (p) (P) +-
+  Now, let us see what happens in the case that Charlie is facing the same decision at a hypothetical earlier stage of the whole process when Alice’s pool was already at 20% of the total stake, while Bob’s pool was only at 3%. In this case, Bob has a very small pool and the total rewards available for its members are much less compared with the previous case. As a result, if Charlie did the same calculation for Bob’s pool, his 1% stake would result in a 4% total stake for the pool but, if one does the calculations, he would receive a mere 30% of the rewards that he would have obtained had he joined Alice’s pool. In such a case, the rational decision is to join Alice’s pool despite the fact that his membership will make Alice’s pool exceed the saturation point. Refer to Table 1 below for the exact figures. 
 
-  test.. test... test..... test?..... test!....
+  <figure class="">
+  <img src="https://ucarecdn.com/fcf073c9-fe00-4765-be05-a6303c28a31a/-/resize/1500/" alt="" class="" width="100%" />
+  <figcaption>Table 1. Charlie who holds 1% of the total stake, is considering joining pools run by Alice, Bob, Brenda and Ben. His reward is calculated in coins for joining each one. The total reward pool is 1,000 and the saturation point is 20%.</figcaption>
+  </figure>
 
-  !!!!!! ???? ,,  -- ---
+  ## Being far-sighted matters
 
-  "Smartypants, double quotes" and 'single quotes'
+  The above appears to be contradictory. To understand what Charlie needs to do we have to appreciate the following fact. The choice of Charlie to join Alice’s pool in the second scenario is only rational in a very near-sighted (aka myopic) sense. In fact, Charlie is better off with Bob’s pool, as is demonstrated by the first scenario, as long as Bob’s pool reaches the saturation point. Thus, if Charlie believes that Bob’s pool will reach the saturation point, the rational choice should be to support it. Other stakeholders will do the same and thus Bob’s pool will rapidly reach the saturation point making everyone that participated in it better off, while also supporting the ideal of decentralization: Alice’s pool instead of constantly growing larger will stop at the saturation point and other pools will be given the ability to grow to the same size. This type of strategic thinking on behalf of the stakeholders is more far-sighted (aka non-myopic) and, as we will see, has the ability to help parties converge to desirable decentralized configurations for the system. 
 
+  It is worth noting that it is unavoidable that the system in its evolution will reach pivotal moments where it will be crucial for stakeholders to exercise far-sighted thinking, as in the scenario above where Alice’s pool reaches the saturation point while other pools are still quite small. The reason is that due to the particular circumstances of each stake pool manager, the operational costs will be variable across the stakeholder population. As a result, it is to be expected that starting from a point zero where no stake pools exist, the pool with the lowest operational cost will be also the one that will be the first to grow. This is natural since low operational costs leave a higher level of rewards to be split among the pool members. It is to be expected that the system will reach moments like the second scenario above where the most competitive pool (the one of Alice with operational cost 25) has reached saturation point while the second-most competitive (the one of Bob with operational cost 30) is still at a small membership level. 
 
-  ## Emphasis
+  One might be tempted to consider long-term thinking in the setting of a Bitcoin-like reward sharing schemes and believe that it can also help to converge to decentralization. Unfortunately, this is not the case. In a Bitcoin-like scheme, contrary to our reward-sharing scheme with a saturation point, there is no point in the development of Alice’s and Bob’s pools when Bob’s pool will become more attractive in Charlie’s view. Indeed, without a saturation point, Alice’s bigger pool will always offer more rewards to Charlie: this stems from the fact that the operational costs of Alice are smaller and hence leave more rewards for all the stakeholders. This will leave Bob’s pool without any members, and eventually, as discussed above, it will be the rational choice for Bob also to dissolve his pool and join Alice’s, making Alice the system’s dictator. 
 
-  **This is bold text**
+  Going back to our reward-sharing scheme, we have established that non-myopic strategic thinking promotes decentralization; nevertheless, there is an important point still open. At a pivotal moment, when the non-myopic stakeholder Charlie rationally decides to forgo the option to join Alice’s saturated pool, he may have a number of aspiring pools to choose from. For instance, together with Bob’s pool that has operational costs of 30 and profit margin 4%, there could be a pool by Brenda with operational cost of 33 and profit margin 2%, and a pool by Ben with operational cost of 36 and profit margin 1%. The rational choice would be to go with the one that will reach the saturation point; is there a way to tell which one would be the best choice? In our [full analysis paper](https://arxiv.org/abs/1807.11218 "Reward Sharing Schemes for Stake Pools, arxiv.org") we provide an explicit mechanism that orders the pools according to their desirability and, using the information recorded in the ledger about each stake pool, it can assist stakeholders in making the best possible choice at any given moment. In our example, it is Brenda’s pool that Charlie should join if he wants to maximize his rewards (see Table 1). To aid Cardano users, the pool-sorting mechanism will be built into Daedalus (and other Cardano-compatible wallets) and will provide a visual representation of the best choices available to stakeholders using the information in the ledger regarding pool registrations. 
 
-  __This is bold text__
+  ## Experimental evaluation
 
-  *This is italic text*
+  So how does our reward scheme fare with respect to decentralization? In the [full analysis paper](https://arxiv.org/abs/1807.11218 "Reward Sharing Schemes for Stake Pools, arxiv.org") we prove that there is a class of decentralized system configurations that are “non-myopic Nash equilibria.” An equilibrium strategy here means that stakeholders have a specific way to create pools, set their profit margins and/or delegate to other pools, so that no stakeholder, thinking for the long term, is better off following a different strategy. Moreover, we demonstrate experimentally that reactive play between stakeholders with non-myopic thinking converges to this equilibrium in a small number of iterations, as shown in Figure 2.
 
-  _This is italic text_
+  <figure class="">
+  <img src="https://ucarecdn.com/6ead3506-7d9f-4eac-a56e-5a72542e643a/-/resize/1500/" alt="" class="" width="100%" />
+  <figcaption>Figure 2. Decentralization as exhibited by our reward-sharing scheme in a simulation with 100 stakeholders and 10% saturation point. Pools are gradually created by the stakeholders. Taking turns, the stakeholders attempt to maximise their payoff non-myopically leading to a final convergence point where 10 pools exist, each with an equal share of the total stake. At the final point, no rational stakeholder wishes to change the state of the system.</figcaption>
+  </figure>
+  <br>
 
-  ~~Strikethrough~~
+  A characteristic of our approach is that the number of pools is only part of the description of the reward-sharing scheme and thus is in no way enforced by the system on the stakeholders. This means stakeholders are free to experiment with pool creation and delegation of stake without having to conform to any predetermined system architecture. This is in contrast to other approaches taken in PoS systems such as [EOS](https://eos.io/documents/EOS_An_Introduction.pdf "EOS - An Introduction, eos.io") where the number of participants is a hardcoded parameter of the consensus system (specifically, 21 pools). At the same time, our approach allows the whole stakeholder set to to express its will, by freely joining and leaving pools, receiving guaranteed rewards for their participation while witnessing how their actions have a quantifiable impact on the management of the PoS distributed ledger no matter the size of their stake. This is contrast to other approaches taken in PoS systems such as [Ethereum 2.0](https://github.com/ethereum/eth2.0-specs "eth2.0-specs, github.com") where ledger maintenance is performed by registered validators on the basis of a collateral deposit without a built-in process of vetting by the stakeholder set. 
 
+  So what would be a sensible choice for the number of pools that should be favored by the reward scheme for Cardano? Given that decentralization is our main objective, it is sensible to set this parameter to be as high as possible. Our network experiments showed that the system can still operate effectively with as many as 1,000 running pools. Choosing a saturation threshold for our reward-sharing scheme based on this number will make having a stake pool profitable even if the total stake delegated in them is as little as 0.1% of the total circulation of Ada.
 
-  ## Blockquotes
+  ## Looking ahead – Sybil attacks
 
+  Given that decentralization can be achieved by a large number of independent stake pools, it is also important to see whether some decentralized system configurations are more preferable than others. As described so far in this post, our reward-sharing scheme will lead rational stakeholders towards promoting the stake pools that will incur the smallest total cost. Even though this maximizes rewards and minimizes costs, it may not be necessarily the most desirable outcome. The reason is that in the equilibrium point one may see a set of stakeholders promoted as stake pool managers who possess collectively a very small stake themselves. This imbalance, in which a small total stake represents the total stake of the system, can be detrimental in many ways: stake pool managers may be prone to corruption or bribery, or, perhaps even worse, a large stake holder may register many stake pools in the hope of controlling the whole ecosystem, performing in this way a [Sybil attack](https://en.wikipedia.org/wiki/Sybil_attack "Sybil attack, wikipedia.org") that would hurt decentralization. For this reason, the reward-sharing scheme as presented in our [full analysis paper](https://arxiv.org/abs/1807.11218 "Reward Sharing Schemes for Stake Pools, arxiv.org") is suitably modified to be sensitive to the stake backing the pool so that this type of behaviour is mitigated. We will delve deeper into this aspect of Cardano reward-sharing in the next blog post.
 
-  > Blockquotes can also be nested...
-  >> ...by using additional greater-than signs right next to each other...
-  > > > ...or with spaces between arrows.
-
-
-  ## Lists
-
-  Unordered
-
-  + Create a list by starting a line with `+`, `-`, or `*`
-  + Sub-lists are made by indenting 2 spaces:
-    - Marker character change forces new list start:
-      * Ac tristique libero volutpat at
-      + Facilisis in pretium nisl aliquet
-      - Nulla volutpat aliquam velit
-  + Very easy!
-
-  Ordered
-
-  1. Lorem ipsum dolor sit amet
-  2. Consectetur adipiscing elit
-  3. Integer molestie lorem at massa
-
-
-  1. You can use sequential numbers...
-  1. ...or keep all the numbers as `1.`
-
-  Start numbering with offset:
-
-  57. foo
-  1. bar
-
-
-  ## Code
-
-  Inline `code`
-
-  Indented code
-
-      // Some comments
-      line 1 of code
-      line 2 of code
-      line 3 of code
-
-
-  Block code "fences"
-
-  ```
-  Sample text here...
-  ```
-
-  Syntax highlighting
-
-  ``` js
-  var foo = function (bar) {
-    return bar++;
-  };
-
-  console.log(foo(5));
-  ```
-
-  ## Tables
-
-  | Option | Description |
-  | ------ | ----------- |
-  | data   | path to data files to supply the data that will be passed into templates. |
-  | engine | engine to be used for processing templates. Handlebars is the default. |
-  | ext    | extension to be used for dest files. |
-
-  Right aligned columns
-
-  | Option | Description |
-  | ------:| -----------:|
-  | data   | path to data files to supply the data that will be passed into templates. |
-  | engine | engine to be used for processing templates. Handlebars is the default. |
-  | ext    | extension to be used for dest files. |
-
-
-  ## Links
-
-  [link text](http://dev.nodeca.com)
-
-  [link with title](http://nodeca.github.io/pica/demo/ "title text!")
-
-  Autoconverted link https://github.com/nodeca/pica (enable linkify to see)
-
-
-  ## Images
-
-  ![Minion](https://octodex.github.com/images/minion.png)
-  ![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
-
-  Like links, Images also have a footnote style syntax
-
-  ![Alt text][id]
-
-  With a reference later in the document defining the URL location:
-
-  [id]: https://octodex.github.com/images/dojocat.jpg  "The Dojocat"
-
-
-  ## Plugins
-
-  The killer feature of `markdown-it` is very effective support of
-  [syntax plugins](https://www.npmjs.org/browse/keyword/markdown-it-plugin).
-
-
-  ### [Emojies](https://github.com/markdown-it/markdown-it-emoji)
-
-  > Classic markup: :wink: :crush: :cry: :tear: :laughing: :yum:
-  >
-  > Shortcuts (emoticons): :-) :-( 8-) ;)
-
-  see [how to change output](https://github.com/markdown-it/markdown-it-emoji#change-output) with twemoji.
-
-
-  ### [Subscript](https://github.com/markdown-it/markdown-it-sub) / [Superscript](https://github.com/markdown-it/markdown-it-sup)
-
-  - 19^th^
-  - H~2~O
-
-
-  ### [\<ins>](https://github.com/markdown-it/markdown-it-ins)
-
-  ++Inserted text++
-
-
-  ### [\<mark>](https://github.com/markdown-it/markdown-it-mark)
-
-  ==Marked text==
-
-
-  ### [Footnotes](https://github.com/markdown-it/markdown-it-footnote)
-
-  Footnote 1 link[^first].
-
-  Footnote 2 link[^second].
-
-  Inline footnote^[Text of inline footnote] definition.
-
-  Duplicated footnote reference[^second].
-
-  [^first]: Footnote **can have markup**
-
-      and multiple paragraphs.
-
-  [^second]: Footnote text.
-
-
-  ### [Definition lists](https://github.com/markdown-it/markdown-it-deflist)
-
-  Term 1
-
-  :   Definition 1
-  with lazy continuation.
-
-  Term 2 with *inline markup*
-
-  :   Definition 2
-
-          { some code, part of Definition 2 }
-
-      Third paragraph of definition 2.
-
-  _Compact style:_
-
-  Term 1
-    ~ Definition 1
-
-  Term 2
-    ~ Definition 2a
-    ~ Definition 2b
-
-
-  ### [Abbreviations](https://github.com/markdown-it/markdown-it-abbr)
-
-  This is HTML abbreviation example.
-
-  It converts "HTML", but keep intact partial entries like "xxxHTMLyyy" and so on.
-
-  *[HTML]: Hyper Text Markup Language
-
-  ### [Custom containers](https://github.com/markdown-it/markdown-it-container)
-
-  ::: warning
-  *here be dragons*
-  :::
+  <small>Artwork, [<img src="https://ucarecdn.com/e711abaa-8d67-4630-bdf5-b9172a104689/-/resize/12/" alt="Creative Commons" />](https://creativecommons.org/licenses/by/4.0/ "Creative Commons") [Mike Beeple](http://www.beeple-crap.com)</small>
 ---

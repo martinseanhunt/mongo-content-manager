@@ -1,10 +1,4 @@
 ---
-title: What is are the considerations when thinking of starting a stake pool?
-image_text: This is the text for the image
-image_filename: infinity.jpg
-tags: ['fud', 'ghostchain', 'newtag', 'another']
-body_content:
-
 content_type: multi
 title: What is are the considerations when thinking of starting a stake pool?
 tags: ['stake pool', 'spo', 'pool']

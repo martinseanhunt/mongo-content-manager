@@ -10,19 +10,28 @@ const itemSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    image_filename: {
+    contentType: {
       type: String,
-      required: true,
-    },
-    image_text: {
-      type: String,
+      enum: ['multi', 'graphic', 'link', 'video', 'podcast'],
       required: true,
     },
     tags: {
       type: Array,
+      required: true,
+    },
+    image: {
+      type: String,
       required: false,
     },
-    body_content: {
+    imageText: {
+      type: String,
+      required: false,
+    },
+    url: {
+      type: String,
+      required: false,
+    },
+    bodyContent: {
       type: String,
       required: false,
     },

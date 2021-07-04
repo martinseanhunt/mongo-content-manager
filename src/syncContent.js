@@ -8,8 +8,8 @@ const unzipper = require('unzipper')
 var _ = require('lodash')
 const { Octokit } = require('@octokit/rest')
 
-const { Item } = require('./models/Item')
 const { promisifyStream } = require('./util/promisifyStream')
+const { Item } = require('./models/Item')
 
 // TODO: If we end up using a github action, use the GH actions auth method
 // see octokit docs
@@ -68,7 +68,16 @@ const syncContent = async () => {
 
     // Parse the metadata contained in the markdown file and get the relevant fields
     const {
-      metadata: { title, image_filename, image_text, tags, body_content },
+      metadata: {
+        title,
+        image,
+        image_text,
+        tags,
+        body_content,
+        content_type,
+        link_url,
+        video_url,
+      },
     } = parseMD(markdown)
 
     // create or update each entry in our database from each item in the repo.
@@ -80,11 +89,14 @@ const syncContent = async () => {
     const dbItem = await Item.findOne({ filename })
     const parsedItem = {
       title,
-      image_filename,
-      image_text,
-      // Set optional fields to null to avoid undefined
-      tags: tags || null,
-      body_content: body_content || null,
+      tags: tags,
+      contentType: content_type,
+      // Set optional fields to null if empty for comparison to existing entry
+      bodyContent: body_content || null,
+      videoUrl: video_url || null,
+      linkUrl: link_url || null,
+      image: image || null,
+      imageText: image_text || null,
     }
 
     if (!dbItem) {

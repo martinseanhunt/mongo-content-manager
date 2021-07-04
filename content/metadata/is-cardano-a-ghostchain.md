@@ -1,7 +1,9 @@
 ---
+content_type: graphic
 title: Is cardano a ghost chain?
-image_text: No, because x,y,z
-image_filename: infinity.jpg
 tags: ['cardano', 'fud', 'ghost chain']
+url:
+image: infinity.jpg
+image_text: No, because x,y,z
 body_content:
 ---

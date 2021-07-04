@@ -78,8 +78,7 @@ const syncContent = async () => {
           tags,
           body_content,
           content_type,
-          link_url,
-          video_url,
+          url,
         },
       } = parseMD(markdown)
 
@@ -97,8 +96,7 @@ const syncContent = async () => {
         contentType: content_type,
         // Set optional fields to null if empty for comparison to existing entry
         bodyContent: body_content || null,
-        videoUrl: video_url || null,
-        linkUrl: link_url || null,
+        url: url || null,
         image: image || null,
         imageText: image_text || null,
       }
@@ -119,19 +117,25 @@ const syncContent = async () => {
 
           // Use isEqual from lodash so we can deep compare array of tags
           if (!_.isEqual(parsedItem[itemKey], dbItem[itemKey])) {
-            console.log('Field changed:', parsedItem[itemKey], dbItem[itemKey])
+            console.log(
+              'Field changed:',
+              itemKey,
+              parsedItem[itemKey],
+              dbItem[itemKey]
+            )
             hasChanged = true
           }
         }
 
         // update the record in the DB if it's changed
         if (hasChanged) {
-          dbItem.filename = filename
+          dbItem.contentType = content_type
+          dbItem.url = url
           dbItem.title = title
-          dbItem.image_filename = image_filename
-          dbItem.image_text = image_text
+          dbItem.image = image
+          dbItem.imageText = image_text
           dbItem.tags = tags
-          dbItem.body_content = body_content
+          dbItem.bodyContent = body_content
 
           await dbItem.save()
           console.log(`Updated: ${filename}`)

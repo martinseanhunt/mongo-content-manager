@@ -3,9 +3,9 @@ content_type: multi
 title: What is are the considerations when thinking of starting a stake pool?
 tags: ['stake pool', 'spo', 'pool']
 url:
-image: 
-image_text: 
-body_content: 
+image:
+image_text:
+body_content: |
   __Advertisement :)__
 
   - __[pica](https://nodeca.github.io/pica/demo/)__ - high quality and fast image
@@ -250,5 +250,4 @@ body_content:
   ::: warning
   *here be dragons*
   :::
-
 ---

@@ -64,6 +64,8 @@ const syncContent = async () => {
   // Iterate over the filenames
   for (const filename of filenames) {
     try {
+      console.log(`processing file ${filename}`)
+
       // Read the file contents - this will be a markdown file
       const markdown = fs.readFileSync(`${metadataPath}/${filename}`, 'utf8')
 
@@ -89,6 +91,7 @@ const syncContent = async () => {
       // first, try to find an entry with the filename
       const dbItem = await Item.findOne({ filename })
       const parsedItem = {
+        filename,
         title,
         tags: tags,
         contentType: content_type,
@@ -135,8 +138,8 @@ const syncContent = async () => {
         }
       }
     } catch (e) {
-      console.error(e)
       console.error(`error processing entry: ${filename}`)
+      console.error(e.message)
     }
   }
 

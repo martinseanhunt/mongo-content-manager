@@ -1,6 +1,6 @@
 ---
 content_type: multi
-title: What is are the considerations when thinking of starting a stake pool?
+title: What are the considerations when thinking of starting a stake pool?
 tags: ['stake pool', 'spo', 'pool']
 url:
 image:

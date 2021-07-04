@@ -7,6 +7,7 @@ const get = require('async-get-file')
 const unzipper = require('unzipper')
 var _ = require('lodash')
 const { Octokit } = require('@octokit/rest')
+const removeMd = require('remove-markdown')
 
 const { promisifyStream } = require('./util/promisifyStream')
 const { Item } = require('./models/Item')
@@ -96,6 +97,7 @@ const syncContent = async () => {
         contentType: content_type,
         // Set optional fields to null if empty for comparison to existing entry
         bodyContent: body_content || null,
+        strippedContent: body_content ? removeMd(body_content) : null,
         url: url || null,
         image: image || null,
         imageText: image_text || null,
@@ -136,6 +138,7 @@ const syncContent = async () => {
           dbItem.imageText = image_text
           dbItem.tags = tags
           dbItem.bodyContent = body_content
+          dbItem.strippedContent = body_content ? removeMd(body_content) : null
 
           await dbItem.save()
           console.log(`Updated: ${filename}`)

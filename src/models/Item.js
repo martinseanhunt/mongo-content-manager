@@ -35,6 +35,10 @@ const itemSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    strippedContent: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,

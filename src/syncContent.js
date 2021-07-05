@@ -3,16 +3,9 @@ const mongoose = require('mongoose')
 const fs = require('fs')
 const parseMD = require('parse-md').default
 var _ = require('lodash')
-const { Octokit } = require('@octokit/rest')
 const removeMd = require('remove-markdown')
 
 const { Item } = require('./models/Item')
-
-// TODO: If we end up using a github action, use the GH actions auth method
-// see octokit docs
-const octokit = new Octokit({
-  auth: process.env.GH_TOKEN,
-})
 
 const syncContent = async () => {
   // Connect to database
@@ -22,42 +15,6 @@ const syncContent = async () => {
     useCreateIndex: true,
   })
   console.log('connected to database')
-
-  /* 
-    // No longer need to do this as we're getting the data straight from this repo
-
-    // Get the repository information from github
-    const repo = await octokit.rest.repos.downloadZipballArchive({
-      owner: 'martinseanhunt',
-      repo: 'mongo-content-manager',
-      ref: 'master',
-    })
-
-    // Create a temporary directory with the current timestamp as a UUID
-    const directory = `./temp-${Date.now()}`
-    const filename = 'repo.zip'
-    shell.exec(`mkdir ${directory}`)
-
-    // Download the zipped repository using the authenticated download url returned from github
-    await get(repo.url, {
-      directory,
-      filename,
-    })
-
-    // Extract the zip file
-    await promisifyStream(
-      fs
-        .createReadStream(`${directory}/${filename}`)
-        .pipe(unzipper.Extract({ path: directory }))
-    )
-
-    // Delete the zip file
-    shell.exec(`rm ${directory}/${filename}`)
-
-    // Get the repository folder name (it will be the only result returned from readdirSync)
-    const repoFolderName = fs.readdirSync(directory)[0]
-
-  */
 
   // Get an array of all the filenames in the metadata folder - each one will correspond to an entry
   const metadataPath = `content/metadata`
@@ -154,9 +111,6 @@ const syncContent = async () => {
   // delete any items that may have been removed from the repo... i.e. items that exist in the database but
   // don't exist in our array of filenames from the repository
   await Item.deleteMany({ filename: { $nin: filenames } })
-
-  // Time to clean up. Delete the temporary folder
-  // shell.exec(`rm -rf ${directory}`)
 
   // For purposes of development / debugging we'll return the items
   const items = await Item.find()

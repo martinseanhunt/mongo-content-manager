@@ -39,3 +39,5 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           REPO_URI: ${{ secrets.REPO_URI }}
           MONGO_URI: ${{ secrets.MONGO_URI }}
+          ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
+          ALGOLIA_API_KEY: ${{ secrets.ALGOLIA_API_KEY }}

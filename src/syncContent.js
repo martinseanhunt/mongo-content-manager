@@ -4,8 +4,15 @@ const fs = require('fs')
 const parseMD = require('parse-md').default
 var _ = require('lodash')
 const removeMd = require('remove-markdown')
+const algoliasearch = require('algoliasearch')
 
 const { Item } = require('./models/Item')
+
+const client = algoliasearch(
+  process.env.ALGOLIA_APP_ID,
+  process.env.ALGOLIA_API_KEY
+)
+const index = client.initIndex('entries')
 
 const syncContent = async () => {
   // Connect to database
@@ -19,6 +26,9 @@ const syncContent = async () => {
   // Get an array of all the filenames in the metadata folder - each one will correspond to an entry
   const metadataPath = `content/metadata`
   const filenames = fs.readdirSync(metadataPath)
+
+  // init algolia entries
+  const algoliaEntries = []
 
   // Iterate over the filenames
   for (const filename of filenames) {
@@ -102,6 +112,17 @@ const syncContent = async () => {
           console.log(`Updated: ${filename}`)
         }
       }
+
+      // Push to algolia search records
+      algoliaEntries.push({
+        filename,
+        title,
+        tags: tags,
+        contentType: content_type,
+        strippedContent: parsedItem.strippedContent,
+        imageText: parsedItem.imageText,
+        objectID: filename,
+      })
     } catch (e) {
       console.error(`error processing entry: ${filename}`)
       console.error(e.message)
@@ -115,10 +136,15 @@ const syncContent = async () => {
   // For purposes of development / debugging we'll return the items
   const items = await Item.find()
 
+  // Add the items to Algolia
+  await index.saveObjects(algoliaEntries, {
+    autoGenerateObjectIDIfNotExist: true,
+  })
+
   // Log the items
   console.log({
     results: items.length,
-    items,
+    // items
   })
 
   // Disconnect from database

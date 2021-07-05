@@ -141,6 +141,8 @@ const syncContent = async () => {
     autoGenerateObjectIDIfNotExist: true,
   })
 
+  // TODO: Remove any items from algolia that have been deleted.
+
   // Log the items
   console.log({
     results: items.length,

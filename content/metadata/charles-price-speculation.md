@@ -1,5 +1,5 @@
 ---
-content_type: podcast
+content_type: video
 title: How does Charles Hoskinson think about the price of ADA?
 tags: ['Charles Hoskinson', 'price', 'ada', 'speculation']
 url: https://www.youtube.com/watch?v=50ula1F4WbQ

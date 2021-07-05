@@ -8,9 +8,10 @@ image_text:
 body_content: |
   Here are some excellent links to get you started...
 
-  [https://www.youtube.com/watch?v=97ufCT6lQcY](The future will be decentralised - TED talk)
-  [https://www.youtube.com/watch?v=97ufCT6lQcY](The future will be decentralised - TED talk)
-  [https://www.youtube.com/watch?v=97ufCT6lQcY](The future will be decentralised - TED talk)
-  [https://www.youtube.com/watch?v=97ufCT6lQcY](The future will be decentralised - TED talk)
-  [https://www.youtube.com/watch?v=97ufCT6lQcY](The future will be decentralised - TED talk)
+  [The future will be decentralised - TED talk](https://www.youtube.com/watch?v=97ufCT6lQcY)
+  [The future will be decentralised - TED talk](https://www.youtube.com/watch?v=97ufCT6lQcY)
+  [The future will be decentralised - TED talk](https://www.youtube.com/watch?v=97ufCT6lQcY)
+  [The future will be decentralised - TED talk](https://www.youtube.com/watch?v=97ufCT6lQcY)
+  [The future will be decentralised - TED talk](https://www.youtube.com/watch?v=97ufCT6lQcY)
+  [The future will be decentralised - TED talk](https://www.youtube.com/watch?v=97ufCT6lQcY)
 ---

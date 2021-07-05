@@ -1,15 +1,11 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
 const fs = require('fs')
-const shell = require('shelljs')
 const parseMD = require('parse-md').default
-const get = require('async-get-file')
-const unzipper = require('unzipper')
 var _ = require('lodash')
 const { Octokit } = require('@octokit/rest')
 const removeMd = require('remove-markdown')
 
-const { promisifyStream } = require('./util/promisifyStream')
 const { Item } = require('./models/Item')
 
 // TODO: If we end up using a github action, use the GH actions auth method
@@ -27,39 +23,44 @@ const syncContent = async () => {
   })
   console.log('connected to database')
 
-  // Get the repository information from github
-  const repo = await octokit.rest.repos.downloadZipballArchive({
-    owner: 'martinseanhunt',
-    repo: 'mongo-content-manager',
-    ref: 'master',
-  })
+  /* 
+    // No longer need to do this as we're getting the data straight from this repo
 
-  // Create a temporary directory with the current timestamp as a UUID
-  const directory = `./temp-${Date.now()}`
-  const filename = 'repo.zip'
-  shell.exec(`mkdir ${directory}`)
+    // Get the repository information from github
+    const repo = await octokit.rest.repos.downloadZipballArchive({
+      owner: 'martinseanhunt',
+      repo: 'mongo-content-manager',
+      ref: 'master',
+    })
 
-  // Download the zipped repository using the authenticated download url returned from github
-  await get(repo.url, {
-    directory,
-    filename,
-  })
+    // Create a temporary directory with the current timestamp as a UUID
+    const directory = `./temp-${Date.now()}`
+    const filename = 'repo.zip'
+    shell.exec(`mkdir ${directory}`)
 
-  // Extract the zip file
-  await promisifyStream(
-    fs
-      .createReadStream(`${directory}/${filename}`)
-      .pipe(unzipper.Extract({ path: directory }))
-  )
+    // Download the zipped repository using the authenticated download url returned from github
+    await get(repo.url, {
+      directory,
+      filename,
+    })
 
-  // Delete the zip file
-  shell.exec(`rm ${directory}/${filename}`)
+    // Extract the zip file
+    await promisifyStream(
+      fs
+        .createReadStream(`${directory}/${filename}`)
+        .pipe(unzipper.Extract({ path: directory }))
+    )
 
-  // Get the repository folder name (it will be the only result returned from readdirSync)
-  const repoFolderName = fs.readdirSync(directory)[0]
+    // Delete the zip file
+    shell.exec(`rm ${directory}/${filename}`)
+
+    // Get the repository folder name (it will be the only result returned from readdirSync)
+    const repoFolderName = fs.readdirSync(directory)[0]
+
+  */
 
   // Get an array of all the filenames in the metadata folder - each one will correspond to an entry
-  const metadataPath = `${directory}/${repoFolderName}/content/metadata`
+  const metadataPath = `content/metadata`
   const filenames = fs.readdirSync(metadataPath)
 
   // Iterate over the filenames
@@ -155,7 +156,7 @@ const syncContent = async () => {
   await Item.deleteMany({ filename: { $nin: filenames } })
 
   // Time to clean up. Delete the temporary folder
-  shell.exec(`rm -rf ${directory}`)
+  // shell.exec(`rm -rf ${directory}`)
 
   // For purposes of development / debugging we'll return the items
   const items = await Item.find()

@@ -136,12 +136,21 @@ const syncContent = async () => {
   // For purposes of development / debugging we'll return the items
   const items = await Item.find()
 
-  // Add the items to Algolia
-  await index.saveObjects(algoliaEntries, {
-    autoGenerateObjectIDIfNotExist: true,
-  })
+  // TODO: Optimise this so that we only run this if there have been changes
+  try {
+    // Clear the existing index
+    await index.clearObjects()
+    console.log('Cleared algolia index')
 
-  // TODO: Remove any items from algolia that have been deleted.
+    // Add the items to Algolia
+    await index.saveObjects(algoliaEntries, {
+      autoGenerateObjectIDIfNotExist: true,
+    })
+    console.log('rebuilt algolia index')
+  } catch (e) {
+    console.error('something went wrong syncing Algolia')
+    console.error(e.message)
+  }
 
   // Log the items
   console.log({

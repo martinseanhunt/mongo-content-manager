@@ -121,6 +121,7 @@ const syncContent = async () => {
 
           if (itemKey === 'contributors') {
             // Pull off the properties we want to compare as mongo doesn't return a plain object with just the values
+            // TODO: There's probably a much better way to do this.
             compareValue = dbItem[itemKey].map((c) => ({
               contributions: c.contributions,
               name: c.name,

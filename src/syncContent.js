@@ -113,14 +113,13 @@ const syncContent = async () => {
         let hasChanged = false
         for (const itemKey in parsedItem) {
           // If the property on the the parsed item is different from the record in the db we know we need to update
-          // the record so set hasChanged to true. We stringify the values so that the array of tags will be compared
-          // by value, not reference.
+          // the record so set hasChanged to true. Using isEqual from lodash so we can deep compare values
 
-          // Use isEqual from lodash so we can deep compare values
           let compareValue = dbItem[itemKey]
 
           if (itemKey === 'contributors') {
-            // Pull off the properties we want to compare as mongo doesn't return a plain object with just the values
+            // If we're comparing the contributors, pull off the properties we want to compare as mongo doesn't retur
+            // a plain object with just the values
             // TODO: There's probably a much better way to do this.
             compareValue = dbItem[itemKey].map((c) => ({
               contributions: c.contributions,

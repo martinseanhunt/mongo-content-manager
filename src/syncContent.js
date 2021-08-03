@@ -5,6 +5,7 @@ const parseMD = require('parse-md').default
 var _ = require('lodash')
 const removeMd = require('remove-markdown')
 const algoliasearch = require('algoliasearch')
+const shell = require('shelljs')
 
 const { Item } = require('./models/Item')
 
@@ -52,12 +53,14 @@ const syncContent = async () => {
       } = parseMD(markdown)
 
       // create or update each entry in our database from each item in the repo.
+
       // TODO: For the MVP version of the app we're using image hosting directly with github but we will need to come
       // up with a better solution that doesn't rely on the images being stored in the repository. We will max out
       // the repo size limit otherwise.
 
       // first, try to find an entry with the filename
       const dbItem = await Item.findOne({ filename })
+
       const parsedItem = {
         filename,
         title,
@@ -70,6 +73,13 @@ const syncContent = async () => {
         image: image || null,
         imageText: image_text || null,
       }
+
+      // Get author and contributor information from github
+      const gitlog = shell.exec(
+        `git shortlog -n -s -- ${metadataPath}/${filename}`
+      )
+
+      console.log(gitlog)
 
       if (!dbItem) {
         // This is a new item so we'll build it and save
@@ -117,7 +127,7 @@ const syncContent = async () => {
       algoliaEntries.push({
         filename,
         title,
-        tags: tags,
+        _tags: tags,
         contentType: content_type,
         strippedContent: parsedItem.strippedContent,
         imageText: parsedItem.imageText,

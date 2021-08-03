@@ -5,7 +5,14 @@ const parseMD = require('parse-md').default
 var _ = require('lodash')
 const removeMd = require('remove-markdown')
 const algoliasearch = require('algoliasearch')
-const shell = require('shelljs')
+const { promisify } = require('util')
+const exec = promisify(require('child_process').exec)
+
+module.exports.getGitUser = async function getGitUser() {
+  const name = await exec('git config --global user.name')
+  const email = await exec('git config --global user.email')
+  return { name, email }
+}
 
 const { Item } = require('./models/Item')
 
@@ -75,11 +82,25 @@ const syncContent = async () => {
       }
 
       // Get author and contributor information from github
-      const gitlog = shell.exec(
-        `git shortlog -n -s -- ${metadataPath}/${filename}`
+      const shortlog = await exec(
+        "git shortlog -sn -e `git log --pretty=format:'%H' --reverse | head -1` `git log --pretty=format:'%H' | head -1` -- " +
+          metadataPath +
+          '/' +
+          filename
       )
 
-      console.log(gitlog)
+      // Process result of shortlog in to contributions, name, email
+      const contributors = shortlog.stdout
+        .split('\n')
+        .filter((line) => line.trim().length > 0)
+        .map((contributor) => contributor.trim().split('\t'))
+        .map(([contributions, nameAndEmail]) => ({
+          contributions: parseInt(contributions),
+          name: nameAndEmail.slice(0, nameAndEmail.lastIndexOf('<')),
+          email: nameAndEmail.match(/<(.*?)>/i)[1],
+        }))
+
+      parsedItem.contributors = contributors
 
       if (!dbItem) {
         // This is a new item so we'll build it and save
@@ -95,8 +116,21 @@ const syncContent = async () => {
           // the record so set hasChanged to true. We stringify the values so that the array of tags will be compared
           // by value, not reference.
 
-          // Use isEqual from lodash so we can deep compare array of tags
-          if (!_.isEqual(parsedItem[itemKey], dbItem[itemKey])) {
+          // Use isEqual from lodash so we can deep compare values - we have to do this differently for the contributors
+          // which is an array of objects
+          let changed
+          if (itemKey === 'contributors') {
+            if (
+              _(parsedItem[itemKey])
+                .differenceWith(dbItem[itemKey], _.isEqual)
+                .isEmpty()
+            )
+              changed = true
+          } else {
+            if (!_.isEqual(parsedItem[itemKey], dbItem[itemKey])) changed = true
+          }
+
+          if (changed) {
             console.log(
               'Field changed:',
               itemKey,
@@ -117,6 +151,7 @@ const syncContent = async () => {
           dbItem.tags = tags
           dbItem.bodyContent = body_content
           dbItem.strippedContent = body_content ? removeMd(body_content) : null
+          dbItem.contributors = contributors
 
           await dbItem.save()
           console.log(`Updated: ${filename}`)

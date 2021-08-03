@@ -1,5 +1,10 @@
 const mongoose = require('mongoose')
 
+const contributorSchema = new mongoose.Schema(
+  { contributions: Number, email: String, name: String },
+  { noId: true }
+)
+
 const itemSchema = new mongoose.Schema(
   {
     filename: {
@@ -39,6 +44,7 @@ const itemSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    contributors: [contributorSchema],
   },
   {
     timestamps: true,

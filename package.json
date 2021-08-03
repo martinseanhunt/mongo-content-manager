@@ -14,7 +14,6 @@
     "lodash": "^4.17.21",
     "mongoose": "^5.13.0",
     "parse-md": "^2.0.4",
-    "remove-markdown": "^0.3.0",
-    "shelljs": "^0.8.4"
+    "remove-markdown": "^0.3.0"
   }
 }

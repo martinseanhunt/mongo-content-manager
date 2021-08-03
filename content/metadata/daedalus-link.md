@@ -1,5 +1,5 @@
 ---
-content_type: link - one ore change
+content_type: link
 title: Daedalus Wallet
 tags: ['wallets']
 url: https://daedaluswallet.io/

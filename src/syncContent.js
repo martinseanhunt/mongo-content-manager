@@ -116,31 +116,26 @@ const syncContent = async () => {
           // the record so set hasChanged to true. We stringify the values so that the array of tags will be compared
           // by value, not reference.
 
-          // Use isEqual from lodash so we can deep compare values - we have to do this differently for the contributors
-          // which is an array of objects
-          let changed
+          // Use isEqual from lodash so we can deep compare values
+          let compareValue = dbItem[itemKey]
+
           if (itemKey === 'contributors') {
             // Pull off the properties we want to compare as mongo doesn't return a plain object with just the values
-            const savedContributors = dbItem[itemKey].map((c) => ({
+            compareValue = dbItem[itemKey].map((c) => ({
               contributions: c.contributions,
               name: c.name,
               email: c.email,
             }))
-
-            if (!_.isEqual(parsedItem[itemKey], savedContributors))
-              changed = true
-          } else {
-            if (!_.isEqual(parsedItem[itemKey], dbItem[itemKey])) changed = true
           }
 
-          if (changed) {
+          if (!_.isEqual(parsedItem[itemKey], compareValue)) {
+            hasChanged = true
             console.log(
               'Field changed:',
               itemKey,
               parsedItem[itemKey],
               dbItem[itemKey]
             )
-            hasChanged = true
           }
         }
 

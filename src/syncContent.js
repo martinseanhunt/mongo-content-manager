@@ -120,11 +120,14 @@ const syncContent = async () => {
           // which is an array of objects
           let changed
           if (itemKey === 'contributors') {
-            if (
-              !_(parsedItem[itemKey])
-                .differenceWith(dbItem[itemKey], _.isEqual)
-                .isEmpty()
-            )
+            // Pull off the properties we want to compare as mongo doesn't return a plain object with just the values
+            const savedContributors = dbItem[itemKey].map((c) => ({
+              contributions: c.contributions,
+              name: c.name,
+              email: c.email,
+            }))
+
+            if (!_.isEqual(parsedItem[itemKey], savedContributors))
               changed = true
           } else {
             if (!_.isEqual(parsedItem[itemKey], dbItem[itemKey])) changed = true
@@ -143,6 +146,11 @@ const syncContent = async () => {
 
         // update the record in the DB if it's changed
         if (hasChanged) {
+          // reset contributors first otherwise updates don't take effect
+          // TODO: this isn't a very nice solution but works for now
+          dbItem.contributors = []
+          await dbItem.save()
+
           dbItem.contentType = content_type
           dbItem.url = url
           dbItem.title = title

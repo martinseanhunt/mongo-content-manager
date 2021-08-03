@@ -96,7 +96,7 @@ const syncContent = async () => {
         .map((contributor) => contributor.trim().split('\t'))
         .map(([contributions, nameAndEmail]) => ({
           contributions: parseInt(contributions),
-          name: nameAndEmail.slice(0, nameAndEmail.lastIndexOf('<')),
+          name: nameAndEmail.slice(0, nameAndEmail.lastIndexOf('<') - 1),
           email: nameAndEmail.match(/<(.*?)>/i)[1],
         }))
 
@@ -121,7 +121,7 @@ const syncContent = async () => {
           let changed
           if (itemKey === 'contributors') {
             if (
-              _(parsedItem[itemKey])
+              !_(parsedItem[itemKey])
                 .differenceWith(dbItem[itemKey], _.isEqual)
                 .isEmpty()
             )

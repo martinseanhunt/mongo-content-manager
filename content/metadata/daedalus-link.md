@@ -1,6 +1,6 @@
 ---
 content_type: link
-title: Daedalus Wallet - test update
+title: Daedalus Wallet
 tags: ['wallets']
 url: https://daedaluswallet.io/
 image:

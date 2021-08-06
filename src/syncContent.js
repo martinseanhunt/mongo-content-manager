@@ -108,9 +108,13 @@ const syncContent = async () => {
       )
 
       // Process result of git log to get original author
-      //const author = originalCommit.split('\n')[1].replace('Author: ', '')
+      const author = originalCommit.stdout
+        .split('\n')[1]
+        .replace('Author: ', '')
 
-      console.log(originalCommit)
+      // TODO: DRY - name and email extraction should be function
+      parsedItem.authorName = author.slice(0, author.lastIndexOf('<') - 1)
+      parsedItem.authorEmail = author.match(/<(.*?)>/i)[1]
 
       if (!dbItem) {
         // This is a new item so we'll build it and save
@@ -165,6 +169,8 @@ const syncContent = async () => {
           dbItem.bodyContent = body_content
           dbItem.strippedContent = body_content ? removeMd(body_content) : null
           dbItem.contributors = contributors
+          dbItem.authorName = parsedItem.authorName
+          dbItem.authorEmail = parsedItem.authorEmail
 
           await dbItem.save()
           console.log(`Updated: ${filename}`)

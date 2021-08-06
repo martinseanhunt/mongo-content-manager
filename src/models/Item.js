@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const contributorSchema = new mongoose.Schema(
-  { contributions: Number, email: String, name: String },
+  { contributions: Number, email: String, name: String, avatar: String },
   { noId: true }
 )
 
@@ -47,6 +47,10 @@ const itemSchema = new mongoose.Schema(
     authorName: {
       type: String,
       required: true,
+    },
+    authorAvatar: {
+      type: String,
+      required: false,
     },
     authorEmail: {
       type: String,

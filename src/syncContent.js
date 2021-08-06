@@ -7,6 +7,8 @@ const removeMd = require('remove-markdown')
 const algoliasearch = require('algoliasearch')
 const { promisify } = require('util')
 const exec = promisify(require('child_process').exec)
+const axios = require('axios')
+const crypto = require('crypto')
 
 module.exports.getGitUser = async function getGitUser() {
   const name = await exec('git config --global user.name')
@@ -90,15 +92,24 @@ const syncContent = async () => {
       )
 
       // Process result of shortlog in to contributions, name, email
-      const contributors = shortlog.stdout
+      let contributors = shortlog.stdout
         .split('\n')
         .filter((line) => line.trim().length > 0)
         .map((contributor) => contributor.trim().split('\t'))
         .map(([contributions, nameAndEmail]) => ({
           contributions: parseInt(contributions),
           name: nameAndEmail.slice(0, nameAndEmail.lastIndexOf('<') - 1),
-          email: nameAndEmail.match(/<(.*?)>/i)[1],
+          email: nameAndEmail.match(/<(.*?)>/i)[1].toLowerCase(),
         }))
+
+      // Try to find an avatar for the user
+      // TODO: This is bad because we're getting the avatar for the same contributor multple times if they have
+      // contributed to multiple files... We should maintian a seperate collection of contributors with the email as
+      // a unique ID.
+      for (const [i, contributor] of contributors.entries()) {
+        const avatar = await getAvatar(contributor.email)
+        contributors[i] = { ...contributors[i], avatar }
+      }
 
       parsedItem.contributors = contributors
 
@@ -115,6 +126,7 @@ const syncContent = async () => {
       // TODO: DRY - name and email extraction should be function
       parsedItem.authorName = author.slice(0, author.lastIndexOf('<') - 1)
       parsedItem.authorEmail = author.match(/<(.*?)>/i)[1]
+      parsedItem.authorAvatar = await getAvatar(parsedItem.authorEmail)
 
       if (!dbItem) {
         // This is a new item so we'll build it and save
@@ -139,6 +151,7 @@ const syncContent = async () => {
               contributions: c.contributions,
               name: c.name,
               email: c.email,
+              avatar: c.avatar,
             }))
           }
 
@@ -171,6 +184,7 @@ const syncContent = async () => {
           dbItem.contributors = contributors
           dbItem.authorName = parsedItem.authorName
           dbItem.authorEmail = parsedItem.authorEmail
+          dbItem.authorAvatar = parsedItem.authorAvatar
 
           await dbItem.save()
           console.log(`Updated: ${filename}`)
@@ -233,3 +247,28 @@ const syncContent = async () => {
 }
 
 syncContent()
+
+// TODO: This is probably going to get rate limited until we switch to a dedicated contributors collection
+const getAvatar = async (email) => {
+  try {
+    const emailSearchRes = await axios.get(
+      `https://api.github.com/search/users?q=${email}+in%3Aemail`,
+      {
+        headers: {
+          Authorization: `token ${process.env.GH_TOKEN}`,
+        },
+      }
+    )
+
+    // if their email address is public we can get the avatar from github
+    if (emailSearchRes.data.total_count)
+      return emailSearchRes.data.items[0].avatar_url
+  } catch (e) {
+    console.error('error getting avatar', e)
+  }
+
+  // Othewise default to gravatar
+  const hash = crypto.createHash('md5').update(email).digest('hex')
+
+  return `https://www.gravatar.com/avatar/${hash}?d=identicon`
+}

@@ -102,12 +102,15 @@ const syncContent = async () => {
 
       parsedItem.contributors = contributors
 
-      // Get original author from github
-      const author = await exec(
+      // Get the original authoring commit from github
+      const originalCommit = await exec(
         `git log --diff-filter=A -- ${metadataPath}/${filename}`
       )
 
-      console.log(author)
+      // Process result of git log to get original author
+      //const author = originalCommit.split('\n')[1].replace('Author: ', '')
+
+      console.log(originalCommit)
 
       if (!dbItem) {
         // This is a new item so we'll build it and save

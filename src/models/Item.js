@@ -44,6 +44,14 @@ const itemSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    authorName: {
+      type: String,
+      required: true,
+    },
+    authorEmail: {
+      type: String,
+      required: false,
+    },
     contributors: [contributorSchema],
   },
   {

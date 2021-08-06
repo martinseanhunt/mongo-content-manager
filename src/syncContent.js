@@ -81,7 +81,7 @@ const syncContent = async () => {
         imageText: image_text || null,
       }
 
-      // Get author and contributor information from github
+      // Contributor information from github
       const shortlog = await exec(
         "git shortlog -sn -e `git log --pretty=format:'%H' --reverse | head -1` `git log --pretty=format:'%H' | head -1` -- " +
           metadataPath +
@@ -101,6 +101,13 @@ const syncContent = async () => {
         }))
 
       parsedItem.contributors = contributors
+
+      // Get original author from github
+      const author = await exec(
+        `git log --diff-filter=A -- ${metadataPath}/${filename}`
+      )
+
+      console.log(author)
 
       if (!dbItem) {
         // This is a new item so we'll build it and save
@@ -162,15 +169,17 @@ const syncContent = async () => {
       }
 
       // Push to algolia search records
-      algoliaEntries.push({
-        filename,
-        title,
-        _tags: tags,
-        contentType: content_type,
-        strippedContent: parsedItem.strippedContent,
-        imageText: parsedItem.imageText,
-        objectID: filename,
-      })
+      // Temporarily disable for dev TODO: renable and use config to turn this off in dev
+      if (false)
+        algoliaEntries.push({
+          filename,
+          title,
+          _tags: tags,
+          contentType: content_type,
+          strippedContent: parsedItem.strippedContent,
+          imageText: parsedItem.imageText,
+          objectID: filename,
+        })
     } catch (e) {
       console.error(`error processing entry: ${filename}`)
       console.error(e.message)
@@ -185,19 +194,22 @@ const syncContent = async () => {
   const items = await Item.find()
 
   // TODO: Optimise this so that we only run this if there have been changes
-  try {
-    // Clear the existing index
-    await index.clearObjects()
-    console.log('Cleared algolia index')
+  // temporarily disable for dev... TODO: reenable
+  if (false) {
+    try {
+      // Clear the existing index
+      await index.clearObjects()
+      console.log('Cleared algolia index')
 
-    // Add the items to Algolia
-    await index.saveObjects(algoliaEntries, {
-      autoGenerateObjectIDIfNotExist: true,
-    })
-    console.log('rebuilt algolia index')
-  } catch (e) {
-    console.error('something went wrong syncing Algolia')
-    console.error(e.message)
+      // Add the items to Algolia
+      await index.saveObjects(algoliaEntries, {
+        autoGenerateObjectIDIfNotExist: true,
+      })
+      console.log('rebuilt algolia index')
+    } catch (e) {
+      console.error('something went wrong syncing Algolia')
+      console.error(e.message)
+    }
   }
 
   // Log the items
